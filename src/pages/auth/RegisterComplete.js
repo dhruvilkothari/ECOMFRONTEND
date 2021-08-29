@@ -1,42 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../../firebase";
+import { googleAuthProvider, auth } from "../../firebase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function RegisterComplete({ history }) {
-  // Only 12 cols are possible
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   useEffect(() => {
     setEmail(window.localStorage.getItem("emailForRegistration"));
   }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // if ( !password) {
+    //   return toast.error("Email must be provided");
+    // }
+    if (!password || password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
+
+    try {
+      console.log(email);
+      const result = await auth.signInWithEmailLink(
+        email,
+        window.location.href
+      );
+
+      if (result.user.emailVerified) {
+        //remove user email from localStorage
+        window.localStorage.removeItem("emailForRegistration");
+        // get  id token
+        let user = await auth.currentUser;
+        await user.updatePassword(password);
+        const idTokenResult = await await user.getIdTokenResult();
+        console.log("user--->", user, "Token------>", idTokenResult.token);
+
+        //  populate redux storage
+
+        // redirect
+        history.push("/");
+      }
+    } catch (e) {
+      console.log(e.message);
+      toast.error(e.message);
+    }
   };
 
-  const completeRegistrationForm = () => {
+  const CompleteRegisterForm = () => {
     return (
-      <form className="" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
-          className="form-control"
           value={email}
-          disabled={true}
           onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          placeholder="Enter Your email"
+          className="form-control"
+          disabled
         />
-        <br />
         <input
           type="password"
-          placeholder="password"
-          className="form-control"
-          autofocus={true}
+          className="form-control mt-3"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoFocus
         />
-        <button type="submit" className="btn btn-raised mt-3" disabled={!email}>
+        <button
+          disabled={!password}
+          type="submit"
+          className="btn btn-raised mt-3 "
+        >
           Complete Registration
         </button>
       </form>
@@ -44,12 +76,11 @@ function RegisterComplete({ history }) {
   };
 
   return (
-    <div className="container p-5 ">
+    <div className="container p-5">
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h4>Complete Registration</h4>
-
-          {completeRegistrationForm()}
+          {CompleteRegisterForm()}
         </div>
       </div>
     </div>

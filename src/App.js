@@ -1,25 +1,48 @@
-import React from "react";
+import React, { useEffect } from "react";
+import Home from "./pages/Home";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import { Switch, Route } from "react-router-dom";
+import Header from "./components/nav/Header";
+import RegisterComplete from "./pages/auth/RegisterComplete";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Login from "../src/pages/auth/Login";
-import Register from "../src/pages/auth/Register";
-import Header from "./component/nav/Header";
-import Home from "./pages/Home";
-import RegisterComplete from "./pages/auth/RegisterComplete";
-const App = () => {
+import { auth } from "./firebase";
+import { useDispatch } from "react-redux";
+function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        console.log("user---->", user);
+        const idTokenResult = await await user.getIdTokenResult();
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: {
+            email: user.email,
+            token: idTokenResult.token,
+          },
+        });
+      }
+    });
+
+    // cleanup
+    return () => unsubscribe();
+  }, []);
+
   return (
     <>
       <Header />
       <ToastContainer />
       <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/register" component={Register} />
-        <Route exact path="/register/complete" component={RegisterComplete} />
+        <Route path="/" exact component={Home} />
+        <Route path="/login" exact component={Login} />
+        <Route path="/register" exact component={Register} />
+        <Route path="/register/complete" exact component={RegisterComplete} />
       </Switch>
     </>
   );
-};
+}
 
 export default App;

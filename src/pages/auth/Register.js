@@ -1,39 +1,46 @@
 import React, { useState } from "react";
-import { auth } from "../../firebase";
+import { googleAuthProvider, auth } from "../../firebase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Register() {
-  // Only 12 cols are possible
   const [email, setEmail] = useState("");
   const handleSubmit = async (e) => {
-    e.preventDefault();
     // console.log(process.env.REACT_APP_REGISTER_REDIRECT_URL);
-    // console.log(
-    //   process.env.REACT_APP_REGISTER_ ===
-    //     "http://localhost:3000/register/complete"
-    // );
+    e.preventDefault();
     const config = {
       url: "http://localhost:3000/register/complete",
       handleCodeInApp: true,
     };
-    await auth.sendSignInLinkToEmail(email, config);
-    toast.success("Email has sent to your account");
-    window.localStorage.setItem("emailForRegistration", email);
-    setEmail("");
+    auth
+      .sendSignInLinkToEmail(email, config)
+      .then(() => {
+        toast.success(`Email Successfully send to ${email}`);
+        window.localStorage.setItem("emailForRegistration", email);
+        setEmail("");
+      })
+      .catch((err) => {
+        toast.error(err.message);
+        setEmail("");
+      });
   };
 
-  const resgisterForm = () => {
+  const registerForm = () => {
     return (
-      <form className="" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
-          className="form-control"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          placeholder="Enter Your email"
+          className="form-control"
+          autoFocus
         />
-        <button type="submit" className="btn btn-raised mt-3" disabled={!email}>
+        <button
+          disabled={!email}
+          type="submit"
+          className="btn btn-raised mt-2 "
+        >
           Register
         </button>
       </form>
@@ -41,12 +48,11 @@ function Register() {
   };
 
   return (
-    <div className="container p-5 ">
+    <div className="container p-5">
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h4>Register</h4>
-
-          {resgisterForm()}
+          {registerForm()}
         </div>
       </div>
     </div>
