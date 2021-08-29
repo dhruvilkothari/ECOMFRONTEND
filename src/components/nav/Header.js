@@ -20,6 +20,7 @@ const { SubMenu, Item } = Menu;
 function Header() {
   const history = useHistory();
   const dispatch = useDispatch();
+  let { user } = useSelector((state) => ({ ...state }));
   const [current, setCurrent] = useState("");
   const handleClick = (e) => {
     setCurrent(e.key);
@@ -36,22 +37,33 @@ function Header() {
   return (
     <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
       <Item key="home" icon={<AppstoreOutlined />}>
-        <Link to="/">Home</Link>
+        <Link to="/">Home </Link>
       </Item>
-      <Item key="register" icon={<UserAddOutlined />} className="float-end">
-        <Link to="/register">Register </Link>
-      </Item>
-      <Item key="login" icon={<UserOutlined />} className="float-end">
-        <Link to="/login">Login </Link>
-      </Item>
+      {!user && (
+        <Item key="register" icon={<UserAddOutlined />} className="float-end">
+          <Link to="/register">Register </Link>
+        </Item>
+      )}
+      {!user && (
+        <Item key="login" icon={<UserOutlined />} className="float-end">
+          <Link to="/login">Login </Link>
+        </Item>
+      )}
 
-      <SubMenu key="SubMenu" icon={<SettingOutlined />} title="Username">
-        <Menu.Item key="setting:1">Option 1</Menu.Item>
-        <Menu.Item key="setting:2">Option 2</Menu.Item>
-        <Menu.Item icon={<LogoutOutlined />} onClick={logout}>
-          Logout
-        </Menu.Item>
-      </SubMenu>
+      {user && (
+        <SubMenu
+          className="float-end"
+          key="SubMenu"
+          icon={<SettingOutlined />}
+          title={user ? user.email.split("@")[0] : ""}
+        >
+          <Menu.Item key="setting:1">Option 1</Menu.Item>
+          <Menu.Item key="setting:2">Option 2</Menu.Item>
+          <Menu.Item icon={<LogoutOutlined />} onClick={logout}>
+            Logout
+          </Menu.Item>
+        </SubMenu>
+      )}
     </Menu>
   );
 }
