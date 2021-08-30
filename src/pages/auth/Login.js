@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { googleAuthProvider, auth } from "../../firebase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,7 +8,7 @@ import {
   GoogleOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 function Login({ history }) {
@@ -17,6 +17,12 @@ function Login({ history }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
+  const { user } = useSelector((state) => ({ ...state }));
+  useEffect(() => {
+    if (user && user.token) {
+      history.push("/");
+    }
+  }, [user]);
   const handleSubmit = async (e) => {
     // console.log(process.env.REACT_APP_REGISTER_REDIRECT_URL);
     e.preventDefault();
@@ -121,9 +127,9 @@ function Login({ history }) {
             block
             shape="round"
             size="large"
-            icon={loading === true ? <LoadingOutlined /> : <GoogleOutlined />}
+            icon={loading1 === true ? <LoadingOutlined /> : <GoogleOutlined />}
           >
-            {loading === true ? "Loading....." : "Login with Google"}
+            {loading1 === true ? "Loading....." : "Login with Google"}
           </Button>
           <Link to="/forgot/password" className="float-end text-danger">
             forgot password

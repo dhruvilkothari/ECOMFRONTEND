@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { googleAuthProvider, auth } from "../../firebase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
-function Register() {
+function Register({ history }) {
   const [email, setEmail] = useState("");
+  const { user } = useSelector((state) => ({ ...state }));
+
+  useEffect(() => {
+    if (user && user.token) {
+      history.push("/");
+    }
+  }, [user]);
+
   const handleSubmit = async (e) => {
     // console.log(process.env.REACT_APP_REGISTER_REDIRECT_URL);
     e.preventDefault();
