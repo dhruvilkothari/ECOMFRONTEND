@@ -27,6 +27,13 @@ function Login({ history }) {
   const [password, setPassword] = useState("12345678");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const roleBasedRedirect = (res) => {
+    if (res.data.role === "admin") {
+      history.push("/admin/dashboard");
+    } else {
+      history.push("/user/history");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,13 +58,13 @@ function Login({ history }) {
               _id: res.data._id,
             },
           });
+          // role based redirect
+          roleBasedRedirect(res);
         })
         .catch((er) => {
           console.log("in LOGIN.js line 56", er);
           // return;
         });
-
-      history.push("/");
     } catch (e) {
       console.log("IN LOGIN.JS line 31----->", e);
       toast.error(e.message);
@@ -83,12 +90,13 @@ function Login({ history }) {
                 _id: res.data._id,
               },
             });
+            roleBasedRedirect(res);
           })
           .catch((er) => {
-            // console.log("in LOGIN.js line 56", er);
+            console.log("in LOGIN.js line 56", er);
             // return;
           });
-        history.push("/");
+        // history.push("/");
       })
       .catch((err) => {
         toast.error(err.message);
