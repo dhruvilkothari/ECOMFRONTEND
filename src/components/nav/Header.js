@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import firebase from "firebase";
 import { useHistory } from "react-router-dom";
 import {
-  MailOutlined,
   AppstoreOutlined,
   SettingOutlined,
   UserOutlined,

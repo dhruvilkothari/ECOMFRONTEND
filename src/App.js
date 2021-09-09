@@ -13,6 +13,10 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import { currentUser } from "../src/functions/auth";
 import History from "./pages/user/History";
 import UserRoute from "../src/components/routes/UserRoute";
+import AdminRoute from "./components/routes/AdminRoute";
+import Password from "../src/pages/user/Password";
+// import Wishlist from "./pages/user/Wishlist";
+import AdminDashBoard from "./pages/admin/AdminDashBoard";
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -42,7 +46,7 @@ function App() {
       }
     });
     return () => unSubscribe();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -55,6 +59,8 @@ function App() {
         <Route path="/register/complete" exact component={RegisterComplete} />
         <Route path="/forgot/password" exact component={ForgotPassword} />
         <UserRoute path="/user/history" exact component={History} />
+        <UserRoute path="/user/password" exact component={Password} />
+        <AdminRoute path="/admin/dashboard" exact component={AdminDashBoard} />
       </Switch>
     </>
   );

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../../firebase";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { Button } from "antd";
+import { useSelector } from "react-redux";
+// import { Button } from "antd";
 
 function ForgotPassword({ history }) {
   const { user } = useSelector((state) => ({ ...state }));
@@ -12,7 +12,7 @@ function ForgotPassword({ history }) {
     if (user && user.token) {
       history.push("/");
     }
-  }, [user]);
+  }, [user, history]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

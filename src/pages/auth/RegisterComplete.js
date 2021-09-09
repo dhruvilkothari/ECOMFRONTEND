@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import { createOrUpdateUser } from "../../functions/auth";
 
 function RegisterComplete({ history }) {
@@ -13,7 +13,7 @@ function RegisterComplete({ history }) {
     if (user && user.token) {
       history.push("/");
     }
-  }, [user]);
+  }, [user, history]);
   const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
   const [password, setPassword] = useState("12345678");
 

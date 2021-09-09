@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { auth, googleAuthProvider } from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "antd";
-import { useSelector, userDispatch } from "react-redux";
-import axios from "axios";
+import { useSelector } from "react-redux";
+// import axios from "axios";
 import {
   GoogleOutlined,
   LoadingOutlined,
@@ -21,7 +21,7 @@ function Login({ history }) {
     if (user && user.token) {
       history.push("/");
     }
-  }, [user]);
+  }, [user, history]);
 
   const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
   const [password, setPassword] = useState("12345678");

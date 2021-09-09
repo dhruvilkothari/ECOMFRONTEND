@@ -10,12 +10,12 @@ function LoadingToRedirect() {
       setCount((currentCount) => (currentCount = currentCount - 1));
     }, 1000);
     // once count =0
-    count == 0 && history.push("/");
+    count === 0 && history.push("/");
     return () => clearInterval(interval);
-  }, [count]);
+  }, [count, history]);
   return (
     <div className="container p-5 text-center">
-      <div class="lds-dual-ring"></div>
+      <div className="lds-dual-ring"></div>
       <p>Redirecting you in {count} seconds</p>
     </div>
   );
