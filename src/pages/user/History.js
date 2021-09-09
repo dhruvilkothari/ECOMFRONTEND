@@ -1,6 +1,5 @@
-import React from "react";
-
-function History() {
+import React, { useEffect } from "react";
+function History({ history }) {
   return (
     <div className="container-fluid">
       <div className="row">
