@@ -1,138 +1,162 @@
 import React, { useState, useEffect } from "react";
-import { googleAuthProvider, auth } from "../../firebase";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import {
-  MailOutlined,
-  LoadingOutlined,
-  GoogleOutlined,
-} from "@ant-design/icons";
-import { Button } from "antd";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { auth, googleAuthProvider } from "../../firebase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Button } from "antd";
+import { useSelector, userDispatch } from "react-redux";
+import axios from "axios";
+import {
+  GoogleOutlined,
+  LoadingOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { createOrUpdateUser } from "../../functions/auth";
 
 function Login({ history }) {
-  const dispatch = useDispatch();
-  const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [loading1, setLoading1] = useState(false);
   const { user } = useSelector((state) => ({ ...state }));
+
   useEffect(() => {
     if (user && user.token) {
       history.push("/");
     }
   }, [user]);
+
+  const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
+  const [password, setPassword] = useState("12345678");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
   const handleSubmit = async (e) => {
-    // console.log(process.env.REACT_APP_REGISTER_REDIRECT_URL);
     e.preventDefault();
     setLoading(true);
-    // console.table(email, password);
+    // console.log("in LOGIN.js ---->", email, password);
     try {
       const result = await auth.signInWithEmailAndPassword(email, password);
-      // console.log(result);
       setLoading(false);
+      // console.log("IN LOGIN.JS LINE 17 ---->", result);
       const { user } = result;
       const idTokenResult = await user.getIdTokenResult();
-      dispatch({
-        type: "LOGGED_IN_USER",
-        payload: {
-          email: user.email,
-          token: idTokenResult.token,
-        },
-      });
+      createOrUpdateUser(idTokenResult.token)
+        .then((res) => {
+          // console.log("in LOGIN.js  line 54---->", res);
+          dispatch({
+            type: "LOGGED_IN_USER",
+            payload: {
+              name: res.data.name,
+              email: res.data.email,
+              token: idTokenResult.token,
+              role: res.data.role,
+              _id: res.data._id,
+            },
+          });
+        })
+        .catch((er) => {
+          console.log("in LOGIN.js line 56", er);
+          // return;
+        });
 
       history.push("/");
     } catch (e) {
-      setLoading(false);
-      console.log(e);
+      console.log("IN LOGIN.JS line 31----->", e);
       toast.error(e.message);
+      setLoading(false);
     }
   };
-
   const googleLogin = async () => {
-    setLoading1(true);
     auth
       .signInWithPopup(googleAuthProvider)
       .then(async (result) => {
-        setLoading1(false);
         const { user } = result;
         const idTokenResult = await user.getIdTokenResult();
-        dispatch({
-          type: "LOGGED_IN_USER",
-          payload: {
-            email: user.email,
-            token: idTokenResult.token,
-          },
-        });
-
+        createOrUpdateUser(idTokenResult.token)
+          .then((res) => {
+            // console.log("in LOGIN.js  line 54---->", res);
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+          })
+          .catch((er) => {
+            // console.log("in LOGIN.js line 56", er);
+            // return;
+          });
         history.push("/");
       })
-      .catch((er) => {
-        setLoading1(false);
-        console.log(er);
-        toast.error(er.message);
+      .catch((err) => {
+        toast.error(err.message);
+        console.log("in LOGIN.js line 107", err.message);
       });
   };
 
-  const loginForm = () => {
-    return (
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Enter Your email"
-            className="form-control"
-            autoFocus
-          />
-        </div>
-        <div className="form-group">
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            placeholder="Enter Your Password"
-            className="form-control"
-          />
-        </div>
-
-        <Button
-          onClick={handleSubmit}
-          disabled={!email || !password | (password.length < 6)}
-          type="primary"
-          className="mb-3 mt-3 "
-          block
-          shape="round"
-          size="large"
-          icon={loading === true ? <LoadingOutlined /> : <MailOutlined />}
-        >
-          {loading === true ? "Loading....." : "Login"}
-        </Button>
-      </form>
-    );
-  };
-
+  const LoginForm = () => (
+    <form onSubmit={handleSubmit}>
+      <div className="form-group">
+        <input
+          required
+          type="email"
+          className="form-control"
+          placeholder="Enter your email "
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoFocus
+        />
+      </div>
+      <br />
+      <div className="form-group">
+        <input
+          required
+          type="password"
+          className="form-control"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      {/* <button type="submit" className="btn btn-raised mt-3">
+        Login
+      </button> */}
+      <br />
+      <Button
+        type="primary"
+        shape="round"
+        onClick={handleSubmit}
+        className="mb-3"
+        block
+        icon={loading ? <LoadingOutlined /> : <MailOutlined />}
+        size="large"
+        disabled={!email || !password || password.length < 6 || loading}
+      >
+        Login With Email and Password
+      </Button>
+    </form>
+  );
   return (
     <div className="container p-5">
       <div className="row">
         <div className="col-md-6 offset-md-3">
           <h4>Login</h4>
-          {loginForm()}
+
+          {LoginForm()}
           <Button
-            onClick={googleLogin}
             type="danger"
-            className="mb-3 mt-3 "
-            block
             shape="round"
+            icon={<GoogleOutlined />}
+            block
             size="large"
-            icon={loading1 === true ? <LoadingOutlined /> : <GoogleOutlined />}
+            onClick={googleLogin}
           >
-            {loading1 === true ? "Loading....." : "Login with Google"}
+            Login with Google
           </Button>
-          <Link to="/forgot/password" className="float-end text-danger">
-            forgot password
+          <Link to="/forgot/password" className="float-end text-danger mt-1">
+            Forgot your password ?
           </Link>
         </div>
       </div>

@@ -1,23 +1,23 @@
 import React, { useEffect } from "react";
-import Home from "./pages/Home";
+import { Switch, Route } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import { Switch, Route } from "react-router-dom";
-import Header from "./components/nav/Header";
-import RegisterComplete from "./pages/auth/RegisterComplete";
+import Home from "./pages/Home";
+import Header from "../src/components/nav/Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import RegisterComplete from "./pages/auth/RegisterComplete";
 import { auth } from "./firebase";
 import { useDispatch } from "react-redux";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 function App() {
   const dispatch = useDispatch();
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    const unSubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log("user---->", user);
-        const idTokenResult = await await user.getIdTokenResult();
+        const idTokenResult = await user.getIdTokenResult();
+        // console.log("IN APP.j line 18  ", user);
+        // console.log("IN APP.j line 19 ", idTokenResult);
         dispatch({
           type: "LOGGED_IN_USER",
           payload: {
@@ -27,9 +27,7 @@ function App() {
         });
       }
     });
-
-    // cleanup
-    return () => unsubscribe();
+    return () => unSubscribe();
   }, []);
 
   return (

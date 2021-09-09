@@ -1,53 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../../firebase";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "antd";
+
 function ForgotPassword({ history }) {
+  const { user } = useSelector((state) => ({ ...state }));
   const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
   const [loading, setLoading] = useState(false);
-  const { user } = useSelector((state) => ({ ...state }));
-
   useEffect(() => {
     if (user && user.token) {
       history.push("/");
     }
   }, [user]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const config = {
-      url: "http://localhost:3000/login",
+      url: process.env.REACT_APP_FORGOT_PASSWORD_REDIRECT_URL,
       handleCodeInApp: true,
     };
     await auth
       .sendPasswordResetEmail(email, config)
-      .then(() => {
-        setLoading(false);
+      .then((res) => {
         setEmail("");
-        toast.success("Reset Password Link  send to your email address");
-      })
-      .catch((error) => {
         setLoading(false);
-        toast.error(error.messages);
+        toast.success("Check Your message for ForgotPassword Link");
+      })
+      .catch((er) => {
+        setLoading(false);
+        toast.error(er.message);
+        console.log("IN FORGOT PASSWORD RESET LINE 24", er);
       });
-    // history.push("/login");
   };
   return (
-    <div className="container col-md-6 offset-md-3 p-5">
+    <div className="container col-md-6 p-5">
       <h4>Forgot Password</h4>
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Enter your Email"
           className="form-control"
+          type="email"
           value={email}
-          autoFocus
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          autoFocus
         />
-        <button type="submit" className="btn btn-raised mt-3" disabled={!email}>
-          Send
+        <br />
+        <button
+          className={loading ? "btn btn-primary" : "btn btn-raised"}
+          disabled={!email}
+        >
+          {loading ? "Loading ...." : "Submit"}
         </button>
       </form>
     </div>
