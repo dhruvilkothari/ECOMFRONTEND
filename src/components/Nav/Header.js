@@ -11,17 +11,25 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
+import { auth } from "../../firebase";
 
 const { SubMenu, Item } = Menu;
 
 function Header() {
   const history = useHistory();
+  const { user } = useSelector((state) => ({ ...state }));
+  // console.log("In Header line 21", user);
+  const dispatch = useDispatch();
   const [current, setCurrent] = useState("");
   const handleClick = (e) => {
     setCurrent(e.key);
   };
 
-  const logout = async () => {};
+  const logout = async () => {
+    firebase.auth().signOut();
+    dispatch({ type: "LOGOUT", payload: null });
+    history.push("/login");
+  };
 
   return (
     <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
@@ -29,26 +37,32 @@ function Header() {
         <Link to="/">Home </Link>
       </Item>
 
-      <Item key="register" icon={<UserAddOutlined />} className="float-end">
-        <Link to="/register">Register</Link>
-      </Item>
-
-      <Item className="float-end" key="login" icon={<UserOutlined />}>
-        <Link to="/login">Login</Link>
-      </Item>
-
-      <SubMenu
-        className="float-end"
-        key="SubMenu"
-        icon={<SettingOutlined />}
-        title="username"
-      >
-        <Item key="setting:1">Option 1</Item>
-        <Item key="setting:2">Option 2</Item>
-        <Item icon={<LogoutOutlined />} onClick={logout}>
-          Logout
+      {!user && (
+        <Item key="register" icon={<UserAddOutlined />} className="float-end">
+          <Link to="/register">Register</Link>
         </Item>
-      </SubMenu>
+      )}
+
+      {!user && (
+        <Item className="float-end" key="login" icon={<UserOutlined />}>
+          <Link to="/login">Login</Link>
+        </Item>
+      )}
+
+      {user && (
+        <SubMenu
+          className="float-end"
+          key="SubMenu"
+          icon={<SettingOutlined />}
+          title={user.email && user.email.split("@")[0]}
+        >
+          <Item key="setting:1">Option 1</Item>
+          <Item key="setting:2">Option 2</Item>
+          <Item icon={<LogoutOutlined />} onClick={logout}>
+            Logout
+          </Item>
+        </SubMenu>
+      )}
     </Menu>
   );
 }
