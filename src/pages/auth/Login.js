@@ -11,19 +11,20 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { auth, googleAuthProvider } from "../../firebase";
 import { Link } from "react-router-dom";
+import { createOrUpdateUser } from "../../functions/auth";
+// const createOrUpdateUser = async (authtoken) => {
+// console.log("IN login.js", authtoken);
+//   return await axios.post(
+//     `${process.env.REACT_APP_API}/create-or-update-user`,
+//     {},
+//     {
+//       headers: {
+//         authtoken: authtoken,
+//       },
+//     }
+//   );
+// };
 
-const createOrUpdateUser = async (authtoken) => {
-  // console.log("IN login.js", authtoken);
-  return await axios.post(
-    `${process.env.REACT_APP_API}/create-or-update-user`,
-    {},
-    {
-      headers: {
-        authtoken: authtoken,
-      },
-    }
-  );
-};
 function Login({ history }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => ({ ...state }));
@@ -50,21 +51,23 @@ function Login({ history }) {
       createOrUpdateUser(idTokenResult.token)
         .then((res) => {
           console.log(res);
+          dispatch({
+            type: "LOGGED_IN_USER",
+            payload: {
+              name: res.data.name,
+              email: res.data.email,
+              token: idTokenResult.token,
+              role: res.data.role,
+              _id: res.data._id,
+            },
+          });
         })
         .catch((err) => {
           console.log(err);
           toast.error(err.message);
         });
 
-      // dispatch({
-      //   type: "LOGGED_IN_USER",
-      //   payload: {
-      //     email: user.email,
-      //     token: idTokenResult.token,
-      //   },
-      // });
-
-      // history.push("/");
+      history.push("/");
     } catch (e) {
       setLoading(false);
       console.log(e);
@@ -118,19 +121,30 @@ function Login({ history }) {
         const { user } = result;
         const idTokenResult = await user.getIdTokenResult();
         // console.log("In login line 88", user, idTokenResult.token);
-        dispatch({
-          type: "LOGGED_IN_USER",
-          payload: {
-            email: user.email,
-            token: idTokenResult.token,
-          },
-        });
-        history.push("/");
+        createOrUpdateUser(idTokenResult.token)
+          .then((res) => {
+            console.log(res);
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error(err.message);
+          });
       })
       .catch((er) => {
         console.log(er);
         toast.error(er.message);
       });
+    history.push("/");
   };
 
   return (

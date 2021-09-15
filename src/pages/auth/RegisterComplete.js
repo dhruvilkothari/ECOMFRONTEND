@@ -1,8 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { auth, googleAuthProvider } from "../../firebase";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { createOrUpdateUser } from "../../functions/auth";
+
+// const createOrUpdateUser = async (authtoken) => {
+//   // console.log("IN login.js", authtoken);
+//   return await axios.post(
+//     `${process.env.REACT_APP_API}/create-or-update-user`,
+//     {},
+//     {
+//       headers: {
+//         authtoken: authtoken,
+//       },
+//     }
+//   );
+// };
 
 function RegisterComplete({ history }) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => ({ ...state }));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
@@ -29,9 +47,27 @@ function RegisterComplete({ history }) {
         const idTokenResult = await user.getIdTokenResult();
         console.log("in register Complete in line 23", idTokenResult.token);
         // redux
+        createOrUpdateUser(idTokenResult.token)
+          .then((res) => {
+            console.log("IN register Complete", res);
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error(err.message);
+          });
 
         // redirect
-        // history.push("/");
+        history.push("/");
       }
     } catch (err) {
       console.log(err.message);
