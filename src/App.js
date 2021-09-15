@@ -1,6 +1,7 @@
 import Header from "../src/components/Nav/Header";
 import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
+import { toast } from "react-toastify";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
@@ -10,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
 import { useDispatch } from "react-redux";
+import { currentUser } from "./functions/auth";
 function App() {
   const dispatch = useDispatch();
 
@@ -19,13 +21,24 @@ function App() {
       if (user) {
         // console.log("in App.js line 19", user);
         const idTokenResult = await user.getIdTokenResult();
-        dispatch({
-          type: "LOGGED_IN_USER",
-          payload: {
-            email: user.email,
-            token: idTokenResult.token,
-          },
-        });
+        currentUser(idTokenResult.token)
+          .then((res) => {
+            // console.log("IN register Complete", res);
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error(err.message);
+          });
       }
     });
     // clean up
