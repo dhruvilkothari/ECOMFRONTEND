@@ -11,7 +11,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { auth } from "../../firebase";
+// import { auth } from "../../firebase";
 
 const { SubMenu, Item } = Menu;
 

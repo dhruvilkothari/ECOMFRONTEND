@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { auth } from "../../firebase";
 
 function ForgotPassword({ history }) {
@@ -10,7 +10,7 @@ function ForgotPassword({ history }) {
     if (user && user.token) {
       history.push("/");
     }
-  }, [user]);
+  }, [user, history]);
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,7 @@ function ForgotPassword({ history }) {
         />
         <br />
         <button type="submit" className="btn btn-raised" disabled={!email}>
-          Send
+          {loading ? "Loading....." : "Send"}
         </button>
       </form>
     </div>

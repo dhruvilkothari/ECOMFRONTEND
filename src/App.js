@@ -9,7 +9,7 @@ import ForgotPassword from "../src/pages/auth/ForgotPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 function App() {
   const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ function App() {
     });
     // clean up
     return () => unsubscribe();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

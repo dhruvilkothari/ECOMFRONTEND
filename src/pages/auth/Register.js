@@ -6,7 +6,7 @@ import { auth, googleAuthProvider } from "../../firebase";
 function Register({ history }) {
   const [email, setEmail] = useState("");
   const { user } = useSelector((state) => ({ ...state }));
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (user && user.token) {
       history.push("/");
@@ -14,6 +14,7 @@ function Register({ history }) {
   }, [user]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!email) {
       return toast.error("Please enter a valid email");
     }
@@ -22,6 +23,7 @@ function Register({ history }) {
       handleCodeInApp: true,
     };
     await auth.sendSignInLinkToEmail(email, config);
+    setLoading(false);
     toast.success(
       `Email has been sent to ${email}.Please check your email for Link`
     );
@@ -43,7 +45,7 @@ function Register({ history }) {
         />
         <br />
         <button type="submit" className="btn btn-raised">
-          Register
+          {loading ? "Loading....." : "Register"}
         </button>
       </form>
     );

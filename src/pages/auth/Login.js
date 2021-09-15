@@ -3,14 +3,27 @@ import { toast } from "react-toastify";
 import { Button } from "antd";
 import {
   GoogleOutlined,
-  GooglePlusCircleFilled,
+  LoadingOutlined,
   MailOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 
 import { auth, googleAuthProvider } from "../../firebase";
 import { Link } from "react-router-dom";
 
+const createOrUpdateUser = async (authtoken) => {
+  // console.log("IN login.js", authtoken);
+  return await axios.post(
+    `${process.env.REACT_APP_API}/create-or-update-user`,
+    {},
+    {
+      headers: {
+        authtoken: authtoken,
+      },
+    }
+  );
+};
 function Login({ history }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => ({ ...state }));
@@ -34,14 +47,24 @@ function Login({ history }) {
       setLoading(false);
       const { user } = result;
       const idTokenResult = await user.getIdTokenResult();
-      dispatch({
-        type: "LOGGED_IN_USER",
-        payload: {
-          email: user.email,
-          token: idTokenResult.token,
-        },
-      });
-      history.push("/");
+      createOrUpdateUser(idTokenResult.token)
+        .then((res) => {
+          // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(err.message);
+        });
+
+      // dispatch({
+      //   type: "LOGGED_IN_USER",
+      //   payload: {
+      //     email: user.email,
+      //     token: idTokenResult.token,
+      //   },
+      // });
+
+      // history.push("/");
     } catch (e) {
       setLoading(false);
       console.log(e);
@@ -74,7 +97,7 @@ function Login({ history }) {
         <br />
         <Button
           onClick={handleSubmit}
-          icon={<MailOutlined />}
+          icon={loading ? <LoadingOutlined /> : <MailOutlined />}
           type="primary"
           className="mb-3"
           block
@@ -82,7 +105,7 @@ function Login({ history }) {
           size="large"
           disabled={!email || password.length < 6}
         >
-          Login with email and password
+          {loading ? "Loading....." : "Login with email and password"}
         </Button>
       </form>
     );
