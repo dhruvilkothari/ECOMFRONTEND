@@ -26,6 +26,15 @@ import { createOrUpdateUser } from "../../functions/auth";
 // };
 
 function Login({ history }) {
+  const rolebasedredirect = (res) => {
+    // alert(res.data.role);
+    console.log(res.data.role);
+    if (res.data.role === "admin") {
+      history.push("/admin/dashboard");
+    } else if (res.data.role === "subscriber") {
+      history.push("/user/history");
+    }
+  };
   const dispatch = useDispatch();
   const { user } = useSelector((state) => ({ ...state }));
 
@@ -50,7 +59,7 @@ function Login({ history }) {
       const idTokenResult = await user.getIdTokenResult();
       createOrUpdateUser(idTokenResult.token)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           dispatch({
             type: "LOGGED_IN_USER",
             payload: {
@@ -61,13 +70,12 @@ function Login({ history }) {
               _id: res.data._id,
             },
           });
+          rolebasedredirect(res);
         })
         .catch((err) => {
           console.log(err);
           toast.error(err.message);
         });
-
-      history.push("/");
     } catch (e) {
       setLoading(false);
       console.log(e);
@@ -134,6 +142,7 @@ function Login({ history }) {
                 _id: res.data._id,
               },
             });
+            rolebasedredirect(res);
           })
           .catch((err) => {
             console.log(err);
