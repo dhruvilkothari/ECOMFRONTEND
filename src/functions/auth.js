@@ -24,3 +24,15 @@ export const currentUser = async (authtoken) => {
     }
   );
 };
+export const currentAdmin = async (authtoken) => {
+  // console.log("IN login.js", authtoken);
+  return await axios.post(
+    `${process.env.REACT_APP_API}/current-admin`,
+    {},
+    {
+      headers: {
+        authtoken: authtoken,
+      },
+    }
+  );
+};

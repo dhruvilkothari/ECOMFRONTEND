@@ -5,17 +5,17 @@ function UserNav() {
     <nav>
       <ul className="nav flex-column">
         <li className="nav-item">
-          <Link className="nav-link" to="/user/history" className="nav-link">
+          <Link className="nav-link" to="/user/history">
             History
           </Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" to="/user/password" className="nav-link">
+          <Link className="nav-link" to="/user/password">
             Password
           </Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" to="/user/wishlist" className="nav-link">
+          <Link className="nav-link" to="/user/wishlist">
             Wishlist
           </Link>
         </li>

@@ -11,7 +11,7 @@ function LoadingToRedirect() {
       history.push("/login");
     }
     return () => clearInterval(interval);
-  }, [count]);
+  }, [count, history]);
 
   return (
     <div className="container p-5 text-center">

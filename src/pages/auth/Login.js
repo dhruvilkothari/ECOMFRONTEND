@@ -42,7 +42,7 @@ function Login({ history }) {
     if (user && user.token) {
       history.push("/");
     }
-  }, [user]);
+  }, [user, history]);
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("kotharidhruvil3@gmail.com");
