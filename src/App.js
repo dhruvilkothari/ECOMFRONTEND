@@ -14,6 +14,8 @@ import { useDispatch } from "react-redux";
 import { currentUser } from "./functions/auth";
 import History from "./pages/user/History";
 import UserRoute from "../src/components/routes/UserRoute";
+import Password from "./pages/user/Password";
+import Wishlist from "./pages/user/Wishlist";
 function App() {
   const dispatch = useDispatch();
 
@@ -58,6 +60,8 @@ function App() {
         <Route path="/register/complete" exact component={RegisterComplete} />
         <Route path="/forgot/password" exact component={ForgotPassword} />
         <UserRoute path="/user/history" exact component={History} />
+        <UserRoute path="/user/password" exact component={Password} />
+        <UserRoute path="/user/wishlist" exact component={Wishlist} />
       </Switch>
     </>
   );
