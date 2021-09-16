@@ -6,7 +6,7 @@ import {
   LoadingOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import axios from "axios";
+// import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 
 import { auth, googleAuthProvider } from "../../firebase";

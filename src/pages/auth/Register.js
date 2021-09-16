@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { auth, googleAuthProvider } from "../../firebase";
+import { auth } from "../../firebase";
 
 function Register({ history }) {
   const [email, setEmail] = useState("");

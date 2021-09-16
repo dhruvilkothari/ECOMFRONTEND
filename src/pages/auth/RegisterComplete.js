@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { auth, googleAuthProvider } from "../../firebase";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import { auth } from "../../firebase";
+import { useDispatch } from "react-redux";
+// import axios from "axios";
 import { createOrUpdateUser } from "../../functions/auth";
 
 // const createOrUpdateUser = async (authtoken) => {
@@ -20,7 +20,7 @@ import { createOrUpdateUser } from "../../functions/auth";
 
 function RegisterComplete({ history }) {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => ({ ...state }));
+  // const { user } = useSelector((state) => ({ ...state }));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
@@ -76,7 +76,7 @@ function RegisterComplete({ history }) {
   };
   useEffect(() => {
     setEmail(window.localStorage.getItem("emailForRegistration"));
-  }, []);
+  }, [history]);
   const completeRegistrationForm = () => {
     return (
       <form onSubmit={handleSubmit}>
