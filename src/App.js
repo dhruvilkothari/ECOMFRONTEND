@@ -12,6 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { auth } from "./firebase";
 import { useDispatch } from "react-redux";
 import { currentUser } from "./functions/auth";
+import History from "./pages/user/History";
+import UserRoute from "../src/components/routes/UserRoute";
 function App() {
   const dispatch = useDispatch();
 
@@ -55,6 +57,7 @@ function App() {
         <Route path="/register" exact component={Register} />
         <Route path="/register/complete" exact component={RegisterComplete} />
         <Route path="/forgot/password" exact component={ForgotPassword} />
+        <UserRoute path="/user/history" exact component={History} />
       </Switch>
     </>
   );
