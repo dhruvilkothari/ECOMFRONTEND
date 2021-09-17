@@ -11,6 +11,7 @@ import {
 } from "../../../functions/category";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import CategoryFrom from "../../../components/forms/CategoryFrom";
 
 function CategoryUpdate({ history, match }) {
   const { user } = useSelector((state) => ({ ...state }));
@@ -56,28 +57,6 @@ function CategoryUpdate({ history, match }) {
         }
       });
   };
-
-  const categoryForm = () => {
-    return (
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            required
-            autoFocus
-            type="text"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <br />
-          <button type="submit" className="btn  btn-outline-primary">
-            {loading ? "Loading ....." : "Save"}
-          </button>
-        </div>
-      </form>
-    );
-  };
   return (
     <div className="container-fluid">
       <div className="row">
@@ -86,7 +65,12 @@ function CategoryUpdate({ history, match }) {
         </div>
         <div className="col">
           <h4>Update Category</h4>
-          {categoryForm()}
+          <CategoryFrom
+            handleSubmit={handleSubmit}
+            name={name}
+            setName={setName}
+            loading={loading}
+          />
           <hr />
         </div>
       </div>

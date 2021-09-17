@@ -11,11 +11,14 @@ import {
 } from "../../../functions/category";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import CategoryFrom from "../../../components/forms/CategoryFrom";
 function CategoryCreate() {
   const { user } = useSelector((state) => ({ ...state }));
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  // searching
+  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     loadCategories();
@@ -51,6 +54,13 @@ function CategoryCreate() {
         });
     }
   };
+  // step 3 handleChange
+  const handleSearchChange = (e) => {
+    e.preventDefault();
+    setKeyword(e.target.value.toLowerCase());
+  };
+  // step 4
+  const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,27 +84,6 @@ function CategoryCreate() {
       });
   };
 
-  const categoryForm = () => {
-    return (
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            required
-            autoFocus
-            type="text"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <br />
-          <button type="submit" className="btn  btn-outline-primary">
-            {loading ? "Loading ....." : "Save"}
-          </button>
-        </div>
-      </form>
-    );
-  };
   return (
     <div className="container-fluid">
       <div className="row">
@@ -103,9 +92,23 @@ function CategoryCreate() {
         </div>
         <div className="col">
           <h4>Create Category</h4>
-          {categoryForm()}
+          <CategoryFrom
+            handleSubmit={handleSubmit}
+            name={name}
+            setName={setName}
+            loading={loading}
+          />
+          {/* input field */}
+          <input
+            type="search"
+            placeholder="Filter"
+            value={keyword}
+            className="form-control mb-4 mt-4"
+            onChange={handleSearchChange}
+          />
+
           <hr />
-          {categories.map((c) => {
+          {categories.filter(searched(keyword)).map((c) => {
             return (
               <div key={c._id} className="alert alert-dark">
                 {c.name}
