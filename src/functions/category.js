@@ -11,15 +11,11 @@ export const getCategory = async (slug) => {
 
 export const removeCategory = async (slug, authtoken) => {
   // console.log("IN login.js", authtoken);
-  return await axios.delete(
-    `${process.env.REACT_APP_API}/category/${slug}`,
-    {},
-    {
-      headers: {
-        authtoken,
-      },
-    }
-  );
+  return await axios.delete(`${process.env.REACT_APP_API}/category/${slug}`, {
+    headers: {
+      authtoken,
+    },
+  });
 };
 export const updateCategory = async (slug, category, authtoken) => {
   // console.log("IN login.js", authtoken);

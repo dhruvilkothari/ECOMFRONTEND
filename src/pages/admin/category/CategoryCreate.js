@@ -9,6 +9,8 @@ import {
   getCategory,
   removeCategory,
 } from "../../../functions/category";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 function CategoryCreate() {
   const { user } = useSelector((state) => ({ ...state }));
   const [name, setName] = useState("");
@@ -29,6 +31,27 @@ function CategoryCreate() {
       });
   };
 
+  const handleRemove = async (slug) => {
+    let ans = window.confirm(`Are you sure you want to remove ${slug} ?`);
+    if (ans) {
+      // alert(ans);
+      setLoading(true);
+      removeCategory(slug, user.token)
+        .then((res) => {
+          loadCategories();
+          setLoading(false);
+          toast.error(`${res.data.name} deleted`);
+        })
+        .catch((err) => {
+          if (err.response.status === 400) {
+            setLoading(false);
+            toast.error(err.response.data);
+            // console.error(err);
+          }
+        });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -39,6 +62,7 @@ function CategoryCreate() {
         setLoading(false);
 
         setName("");
+        loadCategories();
         toast.success(`${res.data.name} created`);
       })
       .catch((err) => {
@@ -80,6 +104,28 @@ function CategoryCreate() {
         <div className="col">
           <h4>Create Category</h4>
           {categoryForm()}
+          <hr />
+          {categories.map((c) => {
+            return (
+              <div key={c._id} className="alert alert-dark">
+                {c.name}
+                <span className=" btn-sm float-end ">
+                  <DeleteOutlined
+                    onClick={() => {
+                      handleRemove(c.slug);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    className="text-danger cursor-pointer "
+                  />
+                </span>
+                <Link to={`/admin/category/${c.slug}`}>
+                  <span className="btn-sm float-end">
+                    <EditOutlined className="text-warning " />
+                  </span>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
