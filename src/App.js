@@ -20,6 +20,8 @@ import AdminRoute from "./components/routes/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import CategoryCreate from "../src/pages/admin/category/CategoryCreate";
 import CategoryUpdate from "./pages/admin/category/CategoryUpdate";
+import SubCreate from "./pages/admin/sub/SubCreate";
+import SubUpdate from "./pages/admin/sub/SubUpdate";
 function App() {
   const dispatch = useDispatch();
 
@@ -73,6 +75,8 @@ function App() {
           exact
           component={CategoryUpdate}
         />
+        <AdminRoute path="/admin/sub" exact component={SubCreate} />
+        <AdminRoute path="/admin/sub/:slug" exact component={SubUpdate} />
       </Switch>
     </>
   );
