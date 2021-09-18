@@ -3,6 +3,8 @@ import AdminNav from "../../../components/Nav/AdminNav";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { createProduct } from "../../../functions/product";
+import ProductCreateForm from "../../../components/forms/ProductCreateForm";
+import { getCategories, getCategorySubs } from "../../../functions/category";
 
 const initialState = {
   title: "Macbook Pro",
@@ -21,32 +23,48 @@ const initialState = {
 };
 
 function ProductCreate() {
+  const [subOptions, setSubsOptions] = useState([]);
+  const [showSub, setShowSub] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => ({ ...state }));
   const [values, setValues] = useState(initialState);
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = () => {
+    getCategories()
+      .then((c) => {
+        setValues({ ...values, categories: c.data });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const {
-    title,
-    description,
-    price,
-    categories,
-    category,
-    subs,
-    shipping,
-    quantity,
-    images,
-    colors,
-    brands,
-    color,
-    brand,
-  } = values;
+  const handleCategoryChange = (e) => {
+    e.preventDefault();
+    console.log("Clicked Category", e.target.value);
+    setValues({ ...values, subs: [], category: e.target.value });
+    getCategorySubs(e.target.value)
+      .then((res) => {
+        console.log(res);
+        setSubsOptions(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.message);
+      });
+    setShowSub(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     createProduct(values, user.token)
       .then((res) => {
         // console.log(res);
@@ -76,104 +94,22 @@ function ProductCreate() {
         </div>
         <div className="col-md-10">
           <h4>Product Create</h4>
+          {/* {JSON.stringify(values.subs)} */}
 
           <hr />
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Title</label>
-              <input
-                type="text"
-                name="title"
-                className="form-control"
-                placeholder=""
-                value={title}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <input
-                type="text"
-                name="description"
-                className="form-control"
-                placeholder=""
-                value={description}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Price</label>
-              <input
-                type="number"
-                name="price"
-                className="form-control"
-                placeholder=""
-                value={price}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Shipping</label>
-              <select
-                name="shipping"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>Please Select </option>
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Quantity</label>
-              <input
-                type="number"
-                name="quantity"
-                className="form-control"
-                placeholder=""
-                value={quantity}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Color</label>
-              <select
-                name="color"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>Please Select a Color</option>
-                {colors.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Brand</label>
-              <select
-                name="brand"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>Please Select a Brand</option>
-                {brands.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button disabled={loading} className="btn btn-info mt-4 mb-4">
-              Save
-            </button>
-          </form>
+          <ProductCreateForm
+            handleSubmit={handleSubmit}
+            handleChange={handleChange}
+            values={values}
+            loading
+            setLoading={setLoading}
+            handleCategoryChange={handleCategoryChange}
+            setSubsOptions={setSubsOptions}
+            showSub={showSub}
+            subOptions={subOptions}
+            setValues={setValues}
+          />
+          {/* {JSON.stringify(values.categories)} */}
         </div>
       </div>
     </div>

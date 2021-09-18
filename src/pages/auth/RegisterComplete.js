@@ -45,11 +45,12 @@ function RegisterComplete({ history }) {
         let user = await auth.currentUser;
         await user.updatePassword(password);
         const idTokenResult = await user.getIdTokenResult();
-        console.log("in register Complete in line 23", idTokenResult.token);
+        // console.log("in register Complete in line 23", idTokenResult.token);
         // redux
         createOrUpdateUser(idTokenResult.token)
           .then((res) => {
-            console.log("IN register Complete", res);
+            // console.log("IN register Complete", res);
+            // console.log(res);
             dispatch({
               type: "LOGGED_IN_USER",
               payload: {
